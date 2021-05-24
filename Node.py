@@ -1,3 +1,6 @@
+from Edge import Edge
+
+
 class Node:
     def __init__(self, _index):
         self.index = _index
@@ -10,10 +13,22 @@ class Node:
         self.in_list = False
         self.previously_visited = None
 
-    def getEdgeByIndex(self, neighbour):
-        for idx, edge in enumerate(self.edges):
-            if edge.destination == neighbour:
-                return idx
+    def addEdge(self, edge: Edge):
+        self.edges.append(edge)
+
+    def isNeighbour(self, node_index) -> bool:
+        for edge in self.edges:
+            if edge.destination == node_index:
+                return True
+        return False
+
+    def getEdge(self, node_index) -> Edge:
+        for edge in self.edges:
+            if edge.destination == node_index:
+                return edge
+
+    def updateEdge(self, node_index, change):
+        self.getEdge(node_index).actual_flow += change
 
     def __str__(self):
         return str(self.index)
@@ -22,4 +37,3 @@ class Node:
         if self.index == other.index:
             return True
         return False
-

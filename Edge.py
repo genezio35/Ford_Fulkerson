@@ -9,7 +9,7 @@ class Edge:
         self.actual_flow = self.flow
 
     def lowerFlow(self, lowering_by):
-        self.actual_flow-=lowering_by
+        self.actual_flow -= lowering_by
 
     def __str__(self):
-        return f'Edge from {self.source} to {self.destination} with actual flow = {self.actual_flow}'
+        return f'Edge to {self.destination} with actual flow = {self.actual_flow}'

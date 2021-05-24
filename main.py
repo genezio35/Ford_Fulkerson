@@ -1,6 +1,6 @@
 from Graph import Graph
 
 g = Graph()
-g.randomGraphGenerator(5, 13, 5)
+g.wikiGraph()
 print(g)
-print(g.fordFulkersonAlgorithm(0, 4))
+print(g.fordFulkersonAlgorithm(0, 6))

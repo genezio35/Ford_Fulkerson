@@ -1,7 +1,13 @@
+from typing import List
+
 from Node import Node
 from Edge import Edge
 from random import randint
 import queue
+
+
+def minimumFlow(edges: List[Edge]):
+    return min([edge.actual_flow for edge in edges])
 
 
 class Graph:
@@ -22,9 +28,28 @@ class Graph:
             end = randint(0, num_of_nodes - 1)
             flow = randint(1, max_weight)
             if (start, end) not in repetition_list:
-                self.nodes[start].edges.append(Edge(start, end, flow))
+                self.nodes[start].addEdge(Edge(start, end, flow))
                 repetition_list.append((start, end))
                 edge_count += 1
+
+    def wikiGraph(self):  # test for wikipedia example (ans = 5)
+        self.nodes = [Node(idx) for idx in range(7)]
+        self.nodes[0].addEdge(Edge(0, 1, 3))
+        self.nodes[0].addEdge(Edge(0, 3, 3))
+
+        self.nodes[1].addEdge(Edge(1, 2, 4))
+
+        self.nodes[2].addEdge(Edge(2, 0, 3))
+        self.nodes[2].addEdge(Edge(2, 3, 1))
+        self.nodes[2].addEdge(Edge(2, 4, 2))
+
+        self.nodes[3].addEdge(Edge(3, 4, 2))
+        self.nodes[3].addEdge(Edge(3, 5, 6))
+
+        self.nodes[4].addEdge(Edge(4, 1, 1))
+        self.nodes[4].addEdge(Edge(4, 6, 1))
+
+        self.nodes[5].addEdge(Edge(5, 6, 9))
 
     def breadthFirstSearch(self, start, destination):  # iterative
         q = queue.Queue()
@@ -45,12 +70,10 @@ class Graph:
         if self.breadthFirstSearch(start, destination):
             # backtracking nodes
             end = destination
-
             path = []
             while end != start:
                 path.append(end)
                 end = self.nodes[end].previously_visited
-
             path.append(start)
             path.reverse()
             return path
@@ -61,17 +84,24 @@ class Graph:
         for node in self.nodes:
             node.resetVisit()
 
+    def pathToEdges(self, path: List[int]):
+        return [self.nodes[first].getEdge(second) for first, second in zip(path[:-1], path[1:])]
+
     def fordFulkersonAlgorithm(self, source, destination):
         flow = 0
         path = self.findPath(source, destination)
         while path is not None:
             print(path)
-            edges = [self.nodes[first].edges[self.nodes[first].getEdgeByIndex(second)] for first, second in
-                     zip(path[:-1], path[1:])]
-            min_flow = min([edge.actual_flow for edge in edges])
+            edges = self.pathToEdges(path)
+            min_flow = minimumFlow(edges)
+            flow += min_flow
             for edge in edges:
                 edge.lowerFlow(min_flow)
-            flow += min_flow
+                if not self.nodes[edge.destination].isNeighbour(edge.source):
+                    self.nodes[edge.destination].addEdge(Edge(edge.destination, edge.source, min_flow))
+                else:
+                    self.nodes[edge.destination].updateEdge(edge.source, min_flow)
+
             path = self.findPath(source, destination)
             print(self)
         return flow
