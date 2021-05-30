@@ -48,6 +48,6 @@ Example:
 
 # How program return answer
 At the end of working, the program prints the maximum flow of graph, for example:
-```python
+```
 Max flow of the graph from node 0 to node 10 is equal to 15 
 ```
