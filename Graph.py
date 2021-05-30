@@ -1,10 +1,9 @@
 from typing import List
-
 from Node import Node
 from Edge import Edge
 from random import randint
 import queue
-
+import json
 
 def minimumFlow(edges: List[Edge]):
     return min([edge.actual_flow for edge in edges])
@@ -31,6 +30,18 @@ class Graph:
                 self.nodes[start].addEdge(Edge(start, end, flow))
                 repetition_list.append((start, end))
                 edge_count += 1
+
+    def fromArray(self, array):
+
+        for idx, node_arr in enumerate(array):
+            node = Node(idx)
+            for edge in node_arr:
+                node.addEdge(Edge(idx, edge[0], edge[1]))
+            self.nodes.append(node)
+
+    def fromJSON(self, file):
+        self.fromArray(json.load(file))
+
 
     def wikiGraph(self):  # test for wikipedia example (ans = 5)
         self.nodes = [Node(idx) for idx in range(7)]
@@ -91,7 +102,6 @@ class Graph:
         flow = 0
         path = self.findPath(source, destination)
         while path is not None:
-            print(path)
             edges = self.pathToEdges(path)
             min_flow = minimumFlow(edges)
             flow += min_flow
@@ -103,8 +113,14 @@ class Graph:
                     self.nodes[edge.destination].updateEdge(edge.source, min_flow)
 
             path = self.findPath(source, destination)
-            print(self)
         return flow
+
+    def toList(self):
+        return [[[edge.destination, edge.flow] for edge in node.edges] for node in self.nodes]
+
+    def toJSON(self, name):
+        with open(name, 'w') as file:
+            json.dump(self.toList(), file)
 
     def __str__(self):
         string = ""
